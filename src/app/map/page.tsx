@@ -3,26 +3,30 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { hasStoredAvatarConfig } from '@/store/avatarStore'
+import { useAvatarStore } from '@/store/avatarStore'
 import { DollarCoin } from '@/components/chrome/DollarCoin'
 import { MobileBlocker } from '@/components/auth/MobileBlocker'
 
-const SceneRoot = dynamic(() => import('@/components/world/SceneRoot'), { ssr: false })
-const WorldMapScene = dynamic(() => import('@/components/world/WorldMapScene'), {
+const SceneRoot = dynamic(() => import('@/components/world/SceneRoot'), {
   ssr: false,
 })
+const WorldMapScene = dynamic(
+  () => import('@/components/world/WorldMapScene'),
+  { ssr: false },
+)
 
 export default function MapPage() {
   const router = useRouter()
+  const hasSetup = useAvatarStore((s) => s.hasSetup)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    if (!hasStoredAvatarConfig()) {
+    if (!hasSetup) {
       router.replace('/create')
       return
     }
     setReady(true)
-  }, [router])
+  }, [router, hasSetup])
 
   if (!ready) {
     return (

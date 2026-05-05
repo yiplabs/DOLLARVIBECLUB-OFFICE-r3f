@@ -1,7 +1,6 @@
 'use client'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { useAvatarStore } from '@/store/avatarStore'
 import { broadcastPos } from '@/store/roomStore'
@@ -18,7 +17,6 @@ export function Avatar() {
   const initialPos = useAvatarStore.getState().pos
 
   const groupRef = useRef<THREE.Group>(null)
-  const meshRef = useRef<THREE.Group | null>(null)
   const lastBroadcast = useRef(0)
 
   useFrame((_, dt) => {
@@ -48,22 +46,11 @@ export function Avatar() {
     }
   })
 
-  const animState = path.length > 0 ? 'walk' : 'idle'
+  const isWalking = path.length > 0
 
   return (
     <group ref={groupRef} position={[initialPos[0], 0, initialPos[1]]}>
-      <AvatarMesh config={config} state={animState} innerRef={meshRef} />
-      <Html
-        position={[0, 2.2, 0]}
-        center
-        distanceFactor={8}
-        occlude="blending"
-        style={{ pointerEvents: 'none' }}
-      >
-        <div className="bg-dvc-card border-2 border-dvc-border rounded-md shadow-brutSm px-2 py-0.5 font-ui font-bold text-xs text-dvc-cream whitespace-nowrap">
-          {config.displayName}
-        </div>
-      </Html>
+      <AvatarMesh config={config} isWalking={isWalking} showName />
     </group>
   )
 }

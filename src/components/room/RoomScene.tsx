@@ -1,6 +1,5 @@
 'use client'
-import { useEffect, useMemo } from 'react'
-import { Environment } from '@react-three/drei'
+import { useEffect, useMemo, useState } from 'react'
 import { getRoom } from '@/lib/rooms/catalog'
 import { THEMES } from '@/lib/rooms/themes'
 import { buildWalkableMask } from '@/lib/rooms/grid'
@@ -39,17 +38,18 @@ export default function RoomScene({ slug }: Props) {
     return () => window.clearInterval(id)
   }, [])
 
-  // Spawn the local avatar at the room's first spawn point on mount.
-  useEffect(() => {
+  // Spawn the local avatar at the room's first spawn point — synchronously,
+  // so the store is updated before <Avatar /> reads its initial pos.
+  useState(() => {
     const [sx, sz] = theme.spawnPoints[0] ?? [theme.gridWidth / 2, theme.gridDepth - 1]
     useAvatarStore.getState().setPos([sx, sz])
     useAvatarStore.getState().setPath([])
-  }, [theme])
+    return true
+  })
 
   return (
     <>
       <RoomLighting theme={theme} />
-      <Environment preset="apartment" />
 
       <Floor theme={theme} onFloorClick={onFloorClick} />
       <Walls theme={theme} />

@@ -33,29 +33,20 @@ type Tab = 'body' | 'hair' | 'outfit' | 'shoes'
 export function CharacterCreator() {
   const config = useAvatarStore((s) => s.config)
   const setConfig = useAvatarStore((s) => s.setConfig)
-  const patchConfig = useAvatarStore((s) => s.patchConfig)
+  const replaceConfig = useAvatarStore((s) => s.replaceConfig)
+  const markSetup = useAvatarStore((s) => s.markSetup)
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('body')
   const [presetId, setPresetId] = useState<string | null>('vibe-coder')
   const { push } = useToast()
 
   const applyPreset = (p: AvatarPreset) => {
-    setConfig(p.config)
+    replaceConfig({ ...p.config, displayName: config.displayName })
     setPresetId(p.id)
   }
 
-  const lockIn = async () => {
-    setConfig(config) // persists localStorage
-    try {
-      await fetch('/api/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          displayName: config.displayName,
-          avatarConfig: config,
-        }),
-      })
-    } catch {}
+  const lockIn = () => {
+    markSetup()
     push('locked in — see you on the floor', 'success')
     router.push('/map')
   }
@@ -85,7 +76,7 @@ export function CharacterCreator() {
           <div className="border-t-2 border-dvc-border p-4 bg-dvc-section/40">
             <button
               onClick={() => {
-                setConfig(randomizeAvatar(config.displayName))
+                replaceConfig(randomizeAvatar(config.displayName))
                 setPresetId(null)
               }}
               className="w-full brut-btn bg-dvc-yellow text-dvc-border py-2 rounded-md font-ui font-black text-sm flex items-center justify-center gap-2"
@@ -95,7 +86,7 @@ export function CharacterCreator() {
             <input
               value={config.displayName}
               onChange={(e) =>
-                patchConfig({ displayName: e.target.value.slice(0, 24) })
+                setConfig({ displayName: e.target.value.slice(0, 24) })
               }
               placeholder="display name"
               className="mt-3 w-full bg-dvc-card border-2 border-dvc-border rounded-md px-3 py-2 font-body text-sm text-dvc-cream outline-none focus:border-dvc-yellow"
@@ -132,7 +123,7 @@ export function CharacterCreator() {
                   {CHARACTER_MODELS.map((m) => (
                     <button
                       key={m.id}
-                      onClick={() => patchConfig({ characterModel: m.id })}
+                      onClick={() => setConfig({ characterModel: m.id })}
                       className={`brut-btn rounded-md py-2 font-ui font-bold text-xs ${
                         config.characterModel === m.id
                           ? 'bg-dvc-yellow text-dvc-border'
@@ -148,7 +139,7 @@ export function CharacterCreator() {
                 <ColorSwatchGrid
                   colors={BODY_TINTS}
                   value={config.bodyTint}
-                  onChange={(c) => patchConfig({ bodyTint: c })}
+                  onChange={(c) => setConfig({ bodyTint: c })}
                 />
               </OptionRow>
             </>
@@ -159,7 +150,7 @@ export function CharacterCreator() {
               <ColorSwatchGrid
                 colors={HAIR_TINTS}
                 value={config.hairTint}
-                onChange={(c) => patchConfig({ hairTint: c })}
+                onChange={(c) => setConfig({ hairTint: c })}
               />
             </OptionRow>
           )}
@@ -170,14 +161,14 @@ export function CharacterCreator() {
                 <ColorSwatchGrid
                   colors={TOP_TINTS}
                   value={config.topTint}
-                  onChange={(c) => patchConfig({ topTint: c })}
+                  onChange={(c) => setConfig({ topTint: c })}
                 />
               </OptionRow>
               <OptionRow label="bottom">
                 <ColorSwatchGrid
                   colors={BOTTOM_TINTS}
                   value={config.bottomTint}
-                  onChange={(c) => patchConfig({ bottomTint: c })}
+                  onChange={(c) => setConfig({ bottomTint: c })}
                 />
               </OptionRow>
             </>
@@ -188,7 +179,7 @@ export function CharacterCreator() {
               <ColorSwatchGrid
                 colors={SHOE_TINTS}
                 value={config.shoeTint}
-                onChange={(c) => patchConfig({ shoeTint: c })}
+                onChange={(c) => setConfig({ shoeTint: c })}
               />
             </OptionRow>
           )}

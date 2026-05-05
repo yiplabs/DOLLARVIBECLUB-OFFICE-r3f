@@ -12,22 +12,14 @@ type Props = {
 
 export function EditProfileModal({ open, onClose }: Props) {
   const config = useAvatarStore((s) => s.config)
-  const patchConfig = useAvatarStore((s) => s.patchConfig)
+  const setConfig = useAvatarStore((s) => s.setConfig)
   const [displayName, setDisplayName] = useState(config.displayName)
-  const [workingOn, setWorkingOn] = useState('')
   const { push } = useToast()
 
   if (!open) return null
 
-  const save = async () => {
-    patchConfig({ displayName })
-    try {
-      await fetch('/api/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayName, workingOn, avatarConfig: { ...config, displayName } }),
-      })
-    } catch {}
+  const save = () => {
+    setConfig({ displayName })
     push('saved your card', 'success')
     onClose()
   }
@@ -62,18 +54,6 @@ export function EditProfileModal({ open, onClose }: Props) {
           />
         </label>
 
-        <label className="block mt-3">
-          <span className="font-ui font-bold text-xs text-dvc-cream/70 uppercase tracking-wider">
-            working on
-          </span>
-          <input
-            value={workingOn}
-            onChange={(e) => setWorkingOn(e.target.value.slice(0, 60))}
-            placeholder="e.g. shipping a tiny saas in 7 days"
-            className="mt-1 w-full bg-dvc-section border-2 border-dvc-border rounded-md px-3 py-2 font-body text-sm text-dvc-cream outline-none focus:border-dvc-yellow"
-          />
-        </label>
-
         <div className="mt-4">
           <span className="font-ui font-bold text-xs text-dvc-cream/70 uppercase tracking-wider">
             top color
@@ -82,7 +62,7 @@ export function EditProfileModal({ open, onClose }: Props) {
             {TOP_TINTS.map((c) => (
               <button
                 key={c}
-                onClick={() => patchConfig({ topTint: c })}
+                onClick={() => setConfig({ topTint: c })}
                 className={`w-7 h-7 rounded-md border-2 ${
                   config.topTint === c ? 'border-dvc-yellow' : 'border-dvc-border'
                 }`}
@@ -101,7 +81,7 @@ export function EditProfileModal({ open, onClose }: Props) {
             {HAIR_TINTS.map((c) => (
               <button
                 key={c}
-                onClick={() => patchConfig({ hairTint: c })}
+                onClick={() => setConfig({ hairTint: c })}
                 className={`w-6 h-6 rounded-md border-2 ${
                   config.hairTint === c ? 'border-dvc-yellow' : 'border-dvc-border'
                 }`}
@@ -119,7 +99,7 @@ export function EditProfileModal({ open, onClose }: Props) {
             {BODY_TINTS.map((c) => (
               <button
                 key={c}
-                onClick={() => patchConfig({ bodyTint: c })}
+                onClick={() => setConfig({ bodyTint: c })}
                 className={`w-6 h-6 rounded-md border-2 ${
                   config.bodyTint === c ? 'border-dvc-yellow' : 'border-dvc-border'
                 }`}

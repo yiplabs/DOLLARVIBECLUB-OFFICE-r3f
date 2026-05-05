@@ -1,7 +1,7 @@
 'use client'
 import { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Environment, Html } from '@react-three/drei'
+import { Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { useRouter } from 'next/navigation'
 import { ROOMS } from '@/lib/rooms/catalog'
@@ -103,8 +103,6 @@ export default function WorldMapScene() {
         shadow-camera-top={30}
         shadow-camera-bottom={-30}
       />
-      <Environment preset="apartment" />
-
       <CampusGround />
       <CenterFountain />
 

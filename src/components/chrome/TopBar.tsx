@@ -8,10 +8,9 @@ type Props = {
   online: number
   onOpenAuth?: () => void
   onOpenEdit?: () => void
-  isGuest?: boolean
 }
 
-export function TopBar({ online, onOpenAuth, onOpenEdit, isGuest = true }: Props) {
+export function TopBar({ online, onOpenAuth, onOpenEdit }: Props) {
   const config = useAvatarStore((s) => s.config)
 
   return (
@@ -60,29 +59,21 @@ export function TopBar({ online, onOpenAuth, onOpenEdit, isGuest = true }: Props
               className="w-4 h-4 rounded-full border border-dvc-border"
               style={{ background: config.topTint }}
             />
-            <span className="font-ui font-bold text-xs text-dvc-cream max-w-[100px] truncate">
+            <span className="font-ui font-bold text-xs text-dvc-cream max-w-[140px] truncate">
               {config.displayName}
+            </span>
+            <span className="font-ui text-[10px] text-dvc-muted uppercase tracking-wider">
+              · guest
             </span>
             <Edit3 size={12} className="text-dvc-cream/60" />
           </button>
 
-          {isGuest ? (
-            <button
-              onClick={onOpenAuth}
-              className="brut-btn bg-dvc-yellow text-dvc-border px-3 py-1.5 rounded-md font-ui font-bold text-xs"
-            >
-              claim your spot
-            </button>
-          ) : (
-            <a
-              href="https://dollarvibeclub.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="brut-btn bg-dvc-teal text-white px-3 py-1.5 rounded-md font-ui font-bold text-xs"
-            >
-              $1/mo
-            </a>
-          )}
+          <button
+            onClick={onOpenAuth}
+            className="brut-btn bg-dvc-yellow text-dvc-border px-3 py-1.5 rounded-md font-ui font-bold text-xs"
+          >
+            sign in (soon)
+          </button>
         </div>
       </div>
     </header>

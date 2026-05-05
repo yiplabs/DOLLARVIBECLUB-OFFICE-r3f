@@ -1,18 +1,11 @@
 'use client'
-import { useEffect } from 'react'
-import { useAvatarStore, hasStoredAvatarConfig } from '@/store/avatarStore'
+import { useAvatarStore } from '@/store/avatarStore'
 import type { AvatarConfig } from '@/lib/avatar/types'
 
-/** Returns the current avatar config, hydrated from localStorage on first mount. */
+/**
+ * Returns the persisted avatar config. Zustand's `persist` middleware
+ * handles localStorage hydration on first mount automatically.
+ */
 export function useAvatarConfig(): AvatarConfig {
-  const config = useAvatarStore((s) => s.config)
-  const loadFromStorage = useAvatarStore((s) => s.loadFromStorage)
-
-  useEffect(() => {
-    loadFromStorage()
-  }, [loadFromStorage])
-
-  return config
+  return useAvatarStore((s) => s.config)
 }
-
-export const hasAvatarConfig = hasStoredAvatarConfig

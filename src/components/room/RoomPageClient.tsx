@@ -2,12 +2,10 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { hasStoredAvatarConfig } from '@/store/avatarStore'
+import { useAvatarStore } from '@/store/avatarStore'
 import { useRealtimeRoom } from '@/hooks/useRealtimeRoom'
-import { isSupabaseConfigured } from '@/lib/supabase/client'
 import { TopBar } from '@/components/chrome/TopBar'
 import { MarqueeTicker } from '@/components/chrome/MarqueeTicker'
-import { DemoModeBanner } from '@/components/chrome/DemoModeBanner'
 import { KeyboardShortcuts } from '@/components/chrome/KeyboardShortcuts'
 import { PresenceSidebar } from '@/components/presence/PresenceSidebar'
 import { ChatInput } from '@/components/chat/ChatInput'
@@ -18,26 +16,34 @@ import { MobileBlocker } from '@/components/auth/MobileBlocker'
 import type { Peer } from '@/store/roomStore'
 import { broadcastEmote } from '@/store/roomStore'
 
-const SceneRoot = dynamic(() => import('@/components/world/SceneRoot'), { ssr: false })
-const RoomScene = dynamic(() => import('@/components/room/RoomScene'), { ssr: false })
+const SceneRoot = dynamic(() => import('@/components/world/SceneRoot'), {
+  ssr: false,
+})
+const RoomScene = dynamic(() => import('@/components/room/RoomScene'), {
+  ssr: false,
+})
 
 export default function RoomPageClient({ slug }: { slug: string }) {
   const router = useRouter()
+  const hasSetup = useAvatarStore((s) => s.hasSetup)
   const [ready, setReady] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
-  const [selectedPeer, setSelectedPeer] = useState<(Peer & { isSelf?: boolean }) | null>(null)
+  const [selectedPeer, setSelectedPeer] = useState<
+    (Peer & { isSelf?: boolean }) | null
+  >(null)
 
+  // Wait for zustand-persist to hydrate from localStorage on first paint.
   useEffect(() => {
-    if (!hasStoredAvatarConfig()) {
+    if (!hasSetup) {
       router.replace('/create')
       return
     }
     setReady(true)
-  }, [router])
+  }, [router, hasSetup])
 
-  const { status, identity, online } = useRealtimeRoom(ready ? slug : '')
+  const { online, identity } = useRealtimeRoom(ready ? slug : '')
 
   useEffect(() => {
     if (!ready) return
@@ -76,7 +82,6 @@ export default function RoomPageClient({ slug }: { slug: string }) {
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-dvc-bg">
       <MobileBlocker />
-      <DemoModeBanner visible={!isSupabaseConfigured() || status === 'demo'} />
 
       <SceneRoot>
         <RoomScene slug={slug} />
@@ -86,7 +91,6 @@ export default function RoomPageClient({ slug }: { slug: string }) {
         online={online}
         onOpenAuth={() => setAuthOpen(true)}
         onOpenEdit={() => setEditOpen(true)}
-        isGuest={identity.isGuest}
       />
 
       <PresenceSidebar
@@ -105,9 +109,11 @@ export default function RoomPageClient({ slug }: { slug: string }) {
       )}
       <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} />
       <MagicLinkPanel open={authOpen} onClose={() => setAuthOpen(false)} />
-      <KeyboardShortcuts open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      <KeyboardShortcuts
+        open={shortcutsOpen}
+        onClose={() => setShortcutsOpen(false)}
+      />
 
-      {/* help button */}
       <button
         onClick={() => setShortcutsOpen(true)}
         className="fixed bottom-12 right-96 z-20 w-9 h-9 rounded-full bg-dvc-card border-2 border-dvc-border shadow-brutSm font-ui font-black text-dvc-cream hover:bg-dvc-yellow hover:text-dvc-border"

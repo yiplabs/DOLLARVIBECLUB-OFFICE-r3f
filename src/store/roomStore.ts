@@ -45,11 +45,14 @@ type RoomStore = {
   removePeer: (userId: string) => void
   setPeers: (peers: Peer[]) => void
   addBubble: (bubble: ChatBubble) => void
+  spawnLocalBubble: (userId: string, body: string) => void
   pruneBubbles: (now: number) => void
   setBroadcaster: (b: Broadcaster) => void
   setClickHighlight: (h: ClickHighlight) => void
   reset: () => void
 }
+
+let bubbleCounter = 0
 
 export const useRoomStore = create<RoomStore>((set) => ({
   peers: {},
@@ -65,11 +68,27 @@ export const useRoomStore = create<RoomStore>((set) => ({
       return { peers: rest }
     }),
   setPeers: (peers) =>
-    set(() => ({ peers: Object.fromEntries(peers.map((p) => [p.userId, p])) })),
+    set(() => ({
+      peers: Object.fromEntries(peers.map((p) => [p.userId, p])),
+    })),
   addBubble: (bubble) =>
     set((s) => ({ bubbles: [...s.bubbles.slice(-12), bubble] })),
+  spawnLocalBubble: (userId, body) =>
+    set((s) => ({
+      bubbles: [
+        ...s.bubbles.slice(-12),
+        {
+          id: `${Date.now()}-${bubbleCounter++}`,
+          userId,
+          body,
+          spawnedAt: Date.now(),
+        },
+      ],
+    })),
   pruneBubbles: (now) =>
-    set((s) => ({ bubbles: s.bubbles.filter((b) => now - b.spawnedAt < 5500) })),
+    set((s) => ({
+      bubbles: s.bubbles.filter((b) => now - b.spawnedAt < 5500),
+    })),
   setBroadcaster: (b) => set({ broadcaster: b }),
   setClickHighlight: (h) => set({ clickHighlight: h }),
   reset: () =>
