@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-dvc-bg: #141412;
+  --color-dvc-section: #0F1714;
+  --color-dvc-card: #1E1E1A;
+  --color-dvc-cream: #F0EAD8;
+  --color-dvc-muted: #94A3B8;
+  --color-dvc-teal: #0D9488;
+  --color-dvc-tealAlt: #0AB99D;
+  --color-dvc-tealDark: #116E63;
+  --color-dvc-yellow: #FBBF24;
+  --color-dvc-border: #2D2D2D;
+  --color-dvc-online: #22C55E;
+  --color-dvc-forest: #064E3B;
+  --color-dvc-discord: #5865F2;
+
+  --font-body: var(--font-sora), sans-serif;
+  --font-ui: var(--font-nunito), sans-serif;
+  --font-hand: var(--font-caveat), cursive;
+  --font-display: var(--font-epilogue), sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #141412;
+  color: #F0EAD8;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+::selection {
+  background: #FBBF24;
+  color: #141412;
+}
+
+/* canvas + r3f reset */
+canvas { display: block; touch-action: none; }
+
+/* brutalist utility classes */
+.brut-card {
+  background: #1E1E1A;
+  border: 2px solid #2D2D2D;
+  box-shadow: 5px 5px 0 #2D2D2D;
+}
+
+.brut-btn {
+  border: 2px solid #2D2D2D;
+  box-shadow: 3px 3px 0 #2D2D2D;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.brut-btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 #2D2D2D; }
+.brut-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #2D2D2D; }
+
+/* aurora ambient blobs (chrome only) */
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* hide scrollbar but keep scrollable */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* prevent text selection during click-drag interactions */
+.select-none-canvas { user-select: none; }
+
+@keyframes aurora {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, -40px) scale(1.05); }
+  66% { transform: translate(-40px, 30px) scale(0.95); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
