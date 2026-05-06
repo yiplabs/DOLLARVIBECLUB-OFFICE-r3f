@@ -253,6 +253,16 @@ export function PrimitiveAvatar({
       default: {
         group.current.position.y = position[1] + Math.sin(t * 2) * 0.02
         if (torso.current) torso.current.rotation.z = Math.sin(t * 2) * 0.02
+        // Slow head turn — looks around every ~12 seconds
+        if (head.current) {
+          const cycle = Math.sin(t * 0.5)
+          // Snap to one of three look angles based on a slower phase
+          const phase = Math.floor((t / 4) % 3)
+          const target = phase === 0 ? 0 : phase === 1 ? 0.45 : -0.45
+          head.current.rotation.y =
+            head.current.rotation.y * 0.94 + target * 0.06
+          head.current.rotation.z = cycle * 0.05
+        }
         break
       }
     }

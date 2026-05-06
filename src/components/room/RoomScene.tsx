@@ -13,6 +13,7 @@ import { AmbientParticles } from './AmbientParticles'
 import { Whiteboard } from './Whiteboard'
 import { ProjectBoard } from './ProjectBoard'
 import { StageSpotlight } from './StageSpotlight'
+import { StageScreen } from './StageScreen'
 import { Avatar } from '@/components/avatar/Avatar'
 import { Pet } from '@/components/avatar/Pet'
 import { NpcAvatar } from '@/components/avatar/NpcAvatar'
@@ -130,6 +131,7 @@ export default function RoomScene({ slug, onSelectSelf, onSelectPeer }: Props) {
             position={[gridToWorld(9), 4.8, gridToWorld(2)]}
             color="#3B82F6"
           />
+          <StageScreen position={[gridToWorld(7), 2.4, 0.18]} />
         </>
       )}
 
