@@ -7,7 +7,12 @@ import { useRoomStore, type Peer } from '@/store/roomStore'
 
 const STEP_SPEED = 3.0
 
-export function RemoteAvatar({ peer }: { peer: Peer }) {
+type Props = {
+  peer: Peer
+  onSelect?: (peer: Peer) => void
+}
+
+export function RemoteAvatar({ peer, onSelect }: Props) {
   const groupRef = useRef<THREE.Group>(null)
 
   useFrame((_, dt) => {
@@ -39,12 +44,25 @@ export function RemoteAvatar({ peer }: { peer: Peer }) {
     (useRoomStore.getState().peers[peer.userId]?.path.length ?? 0) > 0
 
   return (
-    <group ref={groupRef} position={[peer.pos[0], 0, peer.pos[1]]}>
-      <AvatarMesh
-        config={peer.avatarConfig}
-        isWalking={isWalking}
-        showName
-      />
+    <group
+      ref={groupRef}
+      position={[peer.pos[0], 0, peer.pos[1]]}
+      onPointerOver={(e) => {
+        if (!onSelect) return
+        e.stopPropagation()
+        document.body.style.cursor = 'pointer'
+      }}
+      onPointerOut={() => {
+        if (!onSelect) return
+        document.body.style.cursor = ''
+      }}
+      onClick={(e) => {
+        if (!onSelect) return
+        e.stopPropagation()
+        onSelect(peer)
+      }}
+    >
+      <AvatarMesh config={peer.avatarConfig} isWalking={isWalking} showName />
     </group>
   )
 }

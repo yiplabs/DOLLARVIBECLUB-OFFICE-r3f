@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* ── DVC chrome palette ────────────────────────────────────── */
   --color-dvc-bg: #141412;
   --color-dvc-section: #0F1714;
   --color-dvc-card: #1E1E1A;
@@ -15,20 +16,133 @@
   --color-dvc-forest: #064E3B;
   --color-dvc-discord: #5865F2;
 
+  /* ── 3D world palette (used in scene materials) ────────────── */
+  --color-world-wallCream: #F0EAD8;
+  --color-world-wallShadow: #E0D5BC;
+  --color-world-floorBase: #E8E2D0;
+  --color-world-floorAccent: #D4C9B0;
+  --color-world-wood: #B8895A;
+  --color-world-woodDark: #8B6440;
+  --color-world-chairFrame: #2D2D2D;
+  --color-world-plantGreen: #4A8B3A;
+  --color-world-plantPot: #3D2D24;
+  --color-world-rugTeal: #0D9488;
+  --color-world-rugYellow: #FBBF24;
+  --color-world-rugGreen: #84CC16;
+  --color-world-rugBlue: #3B82F6;
+  --color-world-rugOrange: #F97316;
+  --color-world-rugPurple: #6366F1;
+  --color-world-rugPink: #EC4899;
+  --color-world-glassYellow: #FBBF24;
+  --color-world-glassGreen: #22C55E;
+  --color-world-glassOrange: #F97316;
+
+  /* ── fonts (next/font CSS variables wired in layout.tsx) ───── */
   --font-body: var(--font-sora), sans-serif;
   --font-ui: var(--font-nunito), sans-serif;
   --font-hand: var(--font-caveat), cursive;
   --font-display: var(--font-epilogue), sans-serif;
+
+  /* ── brutalist hard-offset shadows ─────────────────────────── */
+  --shadow-brut: 3px 3px 0 #2D2D2D;
+  --shadow-brutSm: 2px 2px 0 #2D2D2D;
+  --shadow-brutCard: 5px 5px 0 #2D2D2D;
+  --shadow-brutLg: 7px 7px 0 #2D2D2D;
+  --shadow-brutHover: 8px 12px 0 #2D2D2D;
+
+  /* ── animations ────────────────────────────────────────────── */
+  --animate-aurora-slow: aurora 22s ease-in-out infinite;
+  --animate-spin-slow: spin 14s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-fadein: fadein 500ms ease-in-out forwards;
+  --animate-fadeout: fadeout 500ms ease-in-out forwards;
+  --animate-pulse-slow: pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-pop-in: pop-in 220ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-shimmer: shimmer 2.4s linear infinite;
 }
 
-* { box-sizing: border-box; }
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(60px, -40px) scale(1.05);
+  }
+  66% {
+    transform: translate(-40px, 30px) scale(0.95);
+  }
+}
 
-html, body {
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
   background: #141412;
-  color: #F0EAD8;
+  color: #f0ead8;
   font-family: var(--font-sora), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -36,29 +150,66 @@ html, body {
 }
 
 ::selection {
-  background: #FBBF24;
+  background: #fbbf24;
   color: #141412;
 }
 
-/* canvas + r3f reset */
-canvas { display: block; touch-action: none; }
+canvas {
+  display: block;
+  touch-action: none;
+}
 
-/* brutalist utility classes */
+/* ── brutalist utility classes ──────────────────────────────── */
 .brut-card {
-  background: #1E1E1A;
-  border: 2px solid #2D2D2D;
-  box-shadow: 5px 5px 0 #2D2D2D;
+  background: #1e1e1a;
+  border: 2px solid #2d2d2d;
+  box-shadow: 5px 5px 0 #2d2d2d;
 }
 
 .brut-btn {
-  border: 2px solid #2D2D2D;
-  box-shadow: 3px 3px 0 #2D2D2D;
+  border: 2px solid #2d2d2d;
+  box-shadow: 3px 3px 0 #2d2d2d;
   transition: transform 120ms ease, box-shadow 120ms ease;
 }
-.brut-btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 #2D2D2D; }
-.brut-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #2D2D2D; }
+.brut-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 #2d2d2d;
+}
+.brut-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #2d2d2d;
+}
 
-/* aurora ambient blobs (chrome only) */
+.brut-input {
+  background: #0f1714;
+  border: 2px solid #2d2d2d;
+  border-radius: 6px;
+  color: #f0ead8;
+  padding: 8px 12px;
+  font-family: var(--font-sora), sans-serif;
+  font-size: 14px;
+  outline: none;
+}
+.brut-input:focus {
+  border-color: #fbbf24;
+}
+
+.brut-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #1e1e1a;
+  border: 2px solid #2d2d2d;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: var(--font-nunito), sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: #f0ead8;
+  box-shadow: 2px 2px 0 #2d2d2d;
+}
+
+/* ── ambient backgrounds ────────────────────────────────────── */
 .aurora-blob {
   position: absolute;
   border-radius: 9999px;
@@ -67,20 +218,54 @@ canvas { display: block; touch-action: none; }
   pointer-events: none;
 }
 
-/* hide scrollbar but keep scrollable */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* prevent text selection during click-drag interactions */
-.select-none-canvas { user-select: none; }
-
-@keyframes aurora {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(60px, -40px) scale(1.05); }
-  66% { transform: translate(-40px, 30px) scale(0.95); }
+.shimmer-text {
+  background-image: linear-gradient(
+    90deg,
+    #fbbf24 0%,
+    #fbbf24 40%,
+    #fff6e0 50%,
+    #fbbf24 60%,
+    #fbbf24 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 2.4s linear infinite;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+/* ── scrollbar utilities ────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: #2d2d2d;
+  border-radius: 3px;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #4d4d4d;
+}
+
+/* ── focus visibility — brutalist style, never browser blue ── */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+.select-none-canvas {
+  user-select: none;
 }

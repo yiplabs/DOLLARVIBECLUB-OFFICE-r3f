@@ -5,11 +5,13 @@ const SHORTCUTS: { keys: string[]; label: string }[] = [
   { keys: ['?'], label: 'this help' },
   { keys: ['Esc'], label: 'close / blur' },
   { keys: ['E'], label: 'edit your card' },
+  { keys: ['G'], label: 'open settings' },
   { keys: ['1'], label: 'wave' },
   { keys: ['2'], label: 'dance' },
-  { keys: ['3'], label: 'sit' },
+  { keys: ['3'], label: 'sit (toggle)' },
   { keys: ['4'], label: 'clap' },
   { keys: ['Click'], label: 'walk to spot' },
+  { keys: ['Click avatar'], label: 'open profile' },
 ]
 
 export function KeyboardShortcuts({
@@ -26,7 +28,7 @@ export function KeyboardShortcuts({
       onClick={onClose}
     >
       <div
-        className="bg-dvc-card border-2 border-dvc-border rounded-2xl shadow-brutLg p-6 w-full max-w-md"
+        className="bg-dvc-card border-2 border-dvc-border rounded-2xl shadow-brutLg p-6 w-full max-w-md animate-pop-in"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="font-hand font-bold text-3xl text-dvc-cream mb-1">

@@ -1,16 +1,18 @@
 'use client'
 import Link from 'next/link'
-import { ArrowLeft, Edit3 } from 'lucide-react'
+import { ArrowLeft, Edit3, Settings as SettingsIcon } from 'lucide-react'
 import { DollarCoin } from './DollarCoin'
+import { LiveEventCountdown } from './LiveEventCountdown'
 import { useAvatarStore } from '@/store/avatarStore'
 
 type Props = {
   online: number
   onOpenAuth?: () => void
   onOpenEdit?: () => void
+  onOpenSettings?: () => void
 }
 
-export function TopBar({ online, onOpenAuth, onOpenEdit }: Props) {
+export function TopBar({ online, onOpenAuth, onOpenEdit, onOpenSettings }: Props) {
   const config = useAvatarStore((s) => s.config)
 
   return (
@@ -31,15 +33,7 @@ export function TopBar({ online, onOpenAuth, onOpenEdit }: Props) {
         </Link>
 
         <div className="flex-1 flex justify-center">
-          <div className="bg-dvc-section border-2 border-dvc-border rounded-md px-3 py-1 shadow-brutSm">
-            <span className="font-ui font-bold text-xs text-dvc-yellow">
-              FRI 20:00 utc
-            </span>
-            <span className="mx-2 text-dvc-border">·</span>
-            <span className="font-ui font-bold text-xs text-dvc-cream">
-              ship-or-die · join →
-            </span>
-          </div>
+          <LiveEventCountdown />
         </div>
 
         <div className="flex items-center gap-3">
@@ -66,6 +60,14 @@ export function TopBar({ online, onOpenAuth, onOpenEdit }: Props) {
               · guest
             </span>
             <Edit3 size={12} className="text-dvc-cream/60" />
+          </button>
+
+          <button
+            onClick={onOpenSettings}
+            className="w-8 h-8 flex items-center justify-center bg-dvc-section border-2 border-dvc-border rounded-md hover:bg-dvc-card transition-colors"
+            aria-label="settings"
+          >
+            <SettingsIcon size={14} className="text-dvc-cream" />
           </button>
 
           <button

@@ -4,31 +4,41 @@ import { useAvatarStore } from '@/store/avatarStore'
 import type { Peer } from '@/store/roomStore'
 import { OnlineUserCard } from './OnlineUserCard'
 import { MiniStatsStrip } from './MiniStatsStrip'
+import { Minimap } from './Minimap'
+import { useStepCounter } from '@/hooks/useStepCounter'
 
 type Props = {
   myUserId: string
   myHandle: string
   online: number
+  slug: string
   onSelectPeer: (peer: Peer & { isSelf?: boolean }) => void
   onEditCard: () => void
+  onOpenAchievements?: () => void
 }
 
 export function PresenceSidebar({
   myUserId,
   myHandle,
   online,
+  slug,
   onSelectPeer,
   onEditCard,
+  onOpenAchievements,
 }: Props) {
   const peers = useRoomStore((s) => s.peers)
   const myConfig = useAvatarStore((s) => s.config)
+  const myPos = useAvatarStore((s) => s.pos)
+  const steps = useStepCounter()
+  const bubbles = useRoomStore((s) => s.bubbles)
+  const msgsPerMin = bubbles.filter((b) => Date.now() - b.spawnedAt < 60000).length
 
   const selfPeer: Peer & { isSelf: true } = {
     userId: myUserId,
     handle: myHandle,
     displayName: myConfig.displayName,
     avatarConfig: myConfig,
-    pos: useAvatarStore.getState().pos,
+    pos: myPos,
     path: [],
     lastSeen: Date.now(),
     isSelf: true,
@@ -47,10 +57,13 @@ export function PresenceSidebar({
             {online}
           </span>
         </div>
-        <MiniStatsStrip online={online} msgsPerMin={3} steps={0} />
+        <MiniStatsStrip online={online} msgsPerMin={msgsPerMin} steps={steps} />
+        <div className="mt-3 flex justify-center">
+          <Minimap slug={slug} />
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto thin-scrollbar p-3 space-y-2">
         {list.map((p) => (
           <OnlineUserCard
             key={p.userId}
@@ -60,13 +73,21 @@ export function PresenceSidebar({
         ))}
       </div>
 
-      <div className="p-3 border-t-2 border-dvc-border bg-dvc-bg/50">
+      <div className="p-3 border-t-2 border-dvc-border bg-dvc-bg/50 flex items-center justify-between">
         <button
           onClick={onEditCard}
-          className="w-full font-ui font-bold text-xs text-dvc-yellow hover:text-dvc-cream"
+          className="font-ui font-bold text-xs text-dvc-yellow hover:text-dvc-cream"
         >
           edit your card →
         </button>
+        {onOpenAchievements && (
+          <button
+            onClick={onOpenAchievements}
+            className="font-ui font-bold text-xs text-dvc-cream/70 hover:text-dvc-yellow"
+          >
+            🏆 achievements
+          </button>
+        )}
       </div>
     </aside>
   )

@@ -1,7 +1,7 @@
 'use client'
 import { Component, type ReactNode, Suspense } from 'react'
 import type { AvatarConfig } from '@/lib/avatar/types'
-import { PrimitiveAvatar } from './PrimitiveAvatar'
+import { PrimitiveAvatar, type EmoteState } from './PrimitiveAvatar'
 import { AvatarGLTF, KENNEY_AVAILABLE } from './AvatarGLTF'
 
 type Props = {
@@ -9,6 +9,7 @@ type Props = {
   position?: [number, number, number]
   showName?: boolean
   isWalking?: boolean
+  emote?: EmoteState
 }
 
 class AvatarBoundary extends Component<
@@ -30,10 +31,6 @@ class AvatarBoundary extends Component<
   }
 }
 
-/**
- * Renders the avatar. Always shows <PrimitiveAvatar> unless Kenney GLBs are
- * present AND <AvatarGLTF> opted in (KENNEY_AVAILABLE flag).
- */
 export function AvatarMesh(props: Props) {
   if (!KENNEY_AVAILABLE) return <PrimitiveAvatar {...props} />
 

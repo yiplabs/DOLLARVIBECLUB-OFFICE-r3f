@@ -1,6 +1,7 @@
 'use client'
 import { X } from 'lucide-react'
 import type { Peer } from '@/store/roomStore'
+import { ProfileStats } from './ProfileStats'
 
 type Props = {
   peer: Peer & { isSelf?: boolean; workingOn?: string | null }
@@ -51,6 +52,8 @@ export function ProfileCard({ peer, onClose }: Props) {
             {peer.workingOn ?? 'just vibing for now'}
           </div>
         </div>
+
+        <ProfileStats isSelf={Boolean(peer.isSelf)} />
 
         {!peer.isSelf && (
           <button className="mt-5 w-full brut-btn bg-dvc-teal text-white py-2 rounded-md font-ui font-bold text-sm">

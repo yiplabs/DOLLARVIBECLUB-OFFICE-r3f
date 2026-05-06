@@ -7,10 +7,15 @@ import { AVATAR_PRESETS, DEFAULT_AVATAR } from '@/lib/avatar/presets'
 const guestName = () =>
   'guest_' + Math.random().toString(36).slice(2, 6)
 
+export type EmoteKind = 'idle' | 'wave' | 'dance' | 'sit' | 'clap'
+
 type AvatarState = {
   config: AvatarConfig
   pos: [number, number]
   path: [number, number][]
+  emote: EmoteKind
+  /** undefined = sustained (e.g. sit); a number = epoch ms when the emote auto-clears. */
+  emoteExpiresAt: number | undefined
   hasSetup: boolean
   setConfig: (patch: Partial<AvatarConfig>) => void
   replaceConfig: (config: AvatarConfig) => void
@@ -18,6 +23,7 @@ type AvatarState = {
   setPos: (pos: [number, number]) => void
   setPath: (path: [number, number][]) => void
   clearPath: () => void
+  setEmote: (kind: EmoteKind, durationMs?: number) => void
   markSetup: () => void
   reset: () => void
 }
@@ -33,6 +39,8 @@ export const useAvatarStore = create<AvatarState>()(
       config: initialConfig,
       pos: [7, 12],
       path: [],
+      emote: 'idle',
+      emoteExpiresAt: undefined,
       hasSetup: false,
       setConfig: (patch) =>
         set((s) => ({ config: { ...s.config, ...patch } })),
@@ -47,12 +55,22 @@ export const useAvatarStore = create<AvatarState>()(
       setPos: (pos) => set({ pos }),
       setPath: (path) => set({ path }),
       clearPath: () => set({ path: [] }),
+      setEmote: (kind, durationMs) =>
+        set({
+          emote: kind,
+          emoteExpiresAt:
+            kind === 'idle' || kind === 'sit' || durationMs === undefined
+              ? undefined
+              : Date.now() + durationMs,
+        }),
       markSetup: () => set({ hasSetup: true }),
       reset: () =>
         set({
           config: { ...DEFAULT_AVATAR, displayName: guestName() },
           pos: [7, 12],
           path: [],
+          emote: 'idle',
+          emoteExpiresAt: undefined,
           hasSetup: false,
         }),
     }),

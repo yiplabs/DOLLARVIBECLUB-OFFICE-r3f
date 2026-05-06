@@ -10,12 +10,14 @@ import {
   randomizeAvatar,
 } from '@/lib/avatar/presets'
 import {
+  ACCESSORIES,
   BODY_TINTS,
   BOTTOM_TINTS,
   CHARACTER_MODELS,
   HAIR_TINTS,
   SHOE_TINTS,
   TOP_TINTS,
+  type AccessoryKind,
 } from '@/lib/avatar/types'
 import { PresetPicker } from './PresetPicker'
 import { OptionRow } from './OptionRow'
@@ -28,7 +30,7 @@ const AvatarPreview3D = dynamic(
   { ssr: false, loading: () => <div className="w-full h-full bg-dvc-card animate-pulse" /> },
 )
 
-type Tab = 'body' | 'hair' | 'outfit' | 'shoes'
+type Tab = 'body' | 'hair' | 'outfit' | 'shoes' | 'extras'
 
 export function CharacterCreator() {
   const config = useAvatarStore((s) => s.config)
@@ -100,8 +102,8 @@ export function CharacterCreator() {
             <PresetPicker onPick={applyPreset} activeId={presetId} />
           </OptionRow>
 
-          <div className="bg-dvc-card border-2 border-dvc-border rounded-lg p-1 grid grid-cols-4 gap-1">
-            {(['body', 'hair', 'outfit', 'shoes'] as Tab[]).map((t) => (
+          <div className="bg-dvc-card border-2 border-dvc-border rounded-lg p-1 grid grid-cols-5 gap-1">
+            {(['body', 'hair', 'outfit', 'shoes', 'extras'] as Tab[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -182,6 +184,52 @@ export function CharacterCreator() {
                 onChange={(c) => setConfig({ shoeTint: c })}
               />
             </OptionRow>
+          )}
+
+          {tab === 'extras' && (
+            <>
+              <OptionRow label="accessory">
+                <div className="grid grid-cols-5 gap-1.5">
+                  {ACCESSORIES.map((a) => {
+                    const active = (config.accessory ?? 'none') === a.kind
+                    return (
+                      <button
+                        key={a.kind}
+                        onClick={() =>
+                          setConfig({ accessory: a.kind as AccessoryKind })
+                        }
+                        className={`brut-btn flex flex-col items-center gap-0.5 py-2 rounded-md ${
+                          active
+                            ? 'bg-dvc-yellow text-dvc-border'
+                            : 'bg-dvc-section text-dvc-cream'
+                        }`}
+                      >
+                        <span className="text-base leading-none">{a.emoji}</span>
+                        <span className="font-ui font-bold text-[9px]">
+                          {a.label}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </OptionRow>
+              <OptionRow label="accessory tint">
+                <ColorSwatchGrid
+                  colors={[
+                    '#1A1A1A',
+                    '#2D2D2D',
+                    '#FBBF24',
+                    '#0D9488',
+                    '#EC4899',
+                    '#3B82F6',
+                    '#22C55E',
+                    '#F0EAD8',
+                  ]}
+                  value={config.accessoryTint ?? '#1A1A1A'}
+                  onChange={(c) => setConfig({ accessoryTint: c })}
+                />
+              </OptionRow>
+            </>
           )}
         </section>
       </main>

@@ -1,3 +1,5 @@
+export type AccessoryKind = 'none' | 'glasses' | 'beanie' | 'crown' | 'headphones'
+
 export type AvatarConfig = {
   /** Picks the Kenney Mini Characters GLB, e.g. "character-male-a.glb". */
   characterModel: string
@@ -7,7 +9,17 @@ export type AvatarConfig = {
   bottomTint: string
   shoeTint: string
   displayName: string
+  accessory?: AccessoryKind
+  accessoryTint?: string
 }
+
+export const ACCESSORIES: { kind: AccessoryKind; label: string; emoji: string }[] = [
+  { kind: 'none', label: 'none', emoji: '·' },
+  { kind: 'glasses', label: 'glasses', emoji: '👓' },
+  { kind: 'beanie', label: 'beanie', emoji: '🧢' },
+  { kind: 'crown', label: 'crown', emoji: '👑' },
+  { kind: 'headphones', label: 'headphones', emoji: '🎧' },
+]
 
 export const CHARACTER_MODELS = [
   { id: 'character-male-a.glb', label: 'Male A' },

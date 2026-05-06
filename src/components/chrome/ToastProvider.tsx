@@ -1,6 +1,7 @@
 'use client'
 import { createContext, useCallback, useContext, useState } from 'react'
 import { Toast, type ToastKind } from './Toast'
+import { playAchievement, playToast } from '@/lib/audio/sfx'
 
 type ToastItem = { id: number; kind: ToastKind; message: string }
 
@@ -20,6 +21,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const push = useCallback((message: string, kind: ToastKind = 'info') => {
     const id = nextId++
     setItems((s) => [...s, { id, kind, message }])
+    if (kind === 'success' && message.includes('—')) {
+      // achievement-style toast
+      playAchievement()
+    } else {
+      playToast()
+    }
     window.setTimeout(
       () => setItems((s) => s.filter((it) => it.id !== id)),
       3500,

@@ -113,10 +113,10 @@ const LOUNGE: RoomTheme = {
     { model: 'pottedPlant', position: [1, 12] },
   ],
   walls: [
-    { from: [0, 0], to: [13, 0] }, // north
-    { from: [13, 0], to: [13, 13] }, // east, with windows
-    { from: [0, 13], to: [13, 13], opening: { kind: 'door', at: 0.5, width: 0.18 } }, // south doorway
-    { from: [0, 0], to: [0, 13] }, // west
+    { from: [0, 0], to: [14, 0] }, // north
+    { from: [14, 0], to: [14, 14] }, // east, with windows
+    { from: [0, 14], to: [14, 14], opening: { kind: 'door', at: 0.5, width: 0.18 } }, // south doorway
+    { from: [0, 0], to: [0, 14] }, // west
   ],
   signs: [
     { wall: 'north', position: 0.5, text: 'DVC LOUNGE', size: 0.5, color: '#0D9488', font: 'caveat' },
@@ -153,10 +153,10 @@ const FOCUS: RoomTheme = {
     { model: 'lampSquareTable', position: [11, 6], scale: 0.5 },
   ],
   walls: [
-    { from: [0, 0], to: [13, 0] },
-    { from: [13, 0], to: [13, 13] },
-    { from: [0, 13], to: [13, 13], opening: { kind: 'door', at: 0.5, width: 0.18 } },
-    { from: [0, 0], to: [0, 13] },
+    { from: [0, 0], to: [14, 0] },
+    { from: [14, 0], to: [14, 14] },
+    { from: [0, 14], to: [14, 14], opening: { kind: 'door', at: 0.5, width: 0.18 } },
+    { from: [0, 0], to: [0, 14] },
   ],
   signs: [
     { wall: 'north', position: 0.5, text: 'DEEP WORK', size: 0.5, color: '#3B82F6', font: 'caveat' },
@@ -201,10 +201,10 @@ const ARENA: RoomTheme = {
     { model: 'chairCushion', position: [9, 11] },
   ],
   walls: [
-    { from: [0, 0], to: [13, 0] },
-    { from: [13, 0], to: [13, 13] },
-    { from: [0, 13], to: [13, 13], opening: { kind: 'door', at: 0.5, width: 0.18 } },
-    { from: [0, 0], to: [0, 13] },
+    { from: [0, 0], to: [14, 0] },
+    { from: [14, 0], to: [14, 14] },
+    { from: [0, 14], to: [14, 14], opening: { kind: 'door', at: 0.5, width: 0.18 } },
+    { from: [0, 0], to: [0, 14] },
   ],
   signs: [
     { wall: 'north', position: 0.5, text: '1V1 BUILD-OFF', size: 0.6, color: '#FBBF24', font: 'epilogue' },
@@ -246,10 +246,10 @@ const BRAINSTORM: RoomTheme = {
     { model: 'plantSmall', position: [12, 6] },
   ],
   walls: [
-    { from: [0, 0], to: [13, 0] },
-    { from: [13, 0], to: [13, 13] },
-    { from: [0, 13], to: [13, 13], opening: { kind: 'door', at: 0.5, width: 0.18 } },
-    { from: [0, 0], to: [0, 13] },
+    { from: [0, 0], to: [14, 0] },
+    { from: [14, 0], to: [14, 14] },
+    { from: [0, 14], to: [14, 14], opening: { kind: 'door', at: 0.5, width: 0.18 } },
+    { from: [0, 0], to: [0, 14] },
   ],
   signs: [
     { wall: 'north', position: 0.5, text: 'IDEAS WELCOME', size: 0.55, color: '#EC4899', font: 'caveat' },
@@ -301,10 +301,10 @@ const STAGE: RoomTheme = {
     { model: 'pottedPlant', position: [12, 1] },
   ],
   walls: [
-    { from: [0, 0], to: [13, 0] },
-    { from: [13, 0], to: [13, 13] },
-    { from: [0, 13], to: [13, 13], opening: { kind: 'door', at: 0.5, width: 0.18 } },
-    { from: [0, 0], to: [0, 13] },
+    { from: [0, 0], to: [14, 0] },
+    { from: [14, 0], to: [14, 14] },
+    { from: [0, 14], to: [14, 14], opening: { kind: 'door', at: 0.5, width: 0.18 } },
+    { from: [0, 0], to: [0, 14] },
   ],
   signs: [
     { wall: 'north', position: 0.5, text: 'TONIGHT: $1 SHIP-OR-DIE', size: 0.65, color: '#FBBF24', font: 'epilogue' },
@@ -343,10 +343,10 @@ const MENTOR: RoomTheme = {
     { model: 'chairCushion', position: [10, 9], rotation: 0 },
   ],
   walls: [
-    { from: [0, 0], to: [13, 0] },
-    { from: [13, 0], to: [13, 13] },
-    { from: [0, 13], to: [13, 13], opening: { kind: 'door', at: 0.5, width: 0.18 } },
-    { from: [0, 0], to: [0, 13] },
+    { from: [0, 0], to: [14, 0] },
+    { from: [14, 0], to: [14, 14] },
+    { from: [0, 14], to: [14, 14], opening: { kind: 'door', at: 0.5, width: 0.18 } },
+    { from: [0, 0], to: [0, 14] },
     // Internal partitions for mini-offices (waist-high; height 0.5)
     { from: [3, 0], to: [3, 4], height: 0.5 },
     { from: [5, 0], to: [5, 4], height: 0.5 },

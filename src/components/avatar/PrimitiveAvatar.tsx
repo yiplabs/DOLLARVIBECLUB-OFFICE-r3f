@@ -3,37 +3,190 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Html } from '@react-three/drei'
 import * as THREE from 'three'
-import type { AvatarConfig } from '@/lib/avatar/types'
+import type { AccessoryKind, AvatarConfig } from '@/lib/avatar/types'
+
+function Accessory({
+  kind,
+  tint,
+}: {
+  kind: AccessoryKind
+  tint: string
+}) {
+  switch (kind) {
+    case 'glasses':
+      return (
+        <group position={[0, 1.18, 0.16]}>
+          <mesh>
+            <torusGeometry args={[0.05, 0.012, 8, 16]} />
+            <meshStandardMaterial color={tint} metalness={0.5} />
+          </mesh>
+          <mesh position={[-0.09, 0, 0]}>
+            <torusGeometry args={[0.05, 0.012, 8, 16]} />
+            <meshStandardMaterial color={tint} metalness={0.5} />
+          </mesh>
+          <mesh position={[0.09, 0, 0]}>
+            <torusGeometry args={[0.05, 0.012, 8, 16]} />
+            <meshStandardMaterial color={tint} metalness={0.5} />
+          </mesh>
+        </group>
+      )
+    case 'beanie':
+      return (
+        <group>
+          <mesh position={[0, 1.4, 0]} castShadow>
+            <sphereGeometry args={[0.21, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4]} />
+            <meshStandardMaterial color={tint} roughness={0.95} />
+          </mesh>
+          <mesh position={[0, 1.5, 0]}>
+            <sphereGeometry args={[0.04, 12, 12]} />
+            <meshStandardMaterial color={tint} roughness={0.95} />
+          </mesh>
+        </group>
+      )
+    case 'crown':
+      return (
+        <group position={[0, 1.45, 0]}>
+          <mesh castShadow>
+            <cylinderGeometry args={[0.16, 0.18, 0.08, 6]} />
+            <meshStandardMaterial color="#FBBF24" metalness={0.8} roughness={0.3} />
+          </mesh>
+          {[0, 1, 2, 3, 4, 5].map((i) => {
+            const a = (i / 6) * Math.PI * 2
+            return (
+              <mesh
+                key={i}
+                position={[Math.cos(a) * 0.17, 0.07, Math.sin(a) * 0.17]}
+                castShadow
+              >
+                <coneGeometry args={[0.04, 0.12, 4]} />
+                <meshStandardMaterial color="#FBBF24" metalness={0.8} />
+              </mesh>
+            )
+          })}
+        </group>
+      )
+    case 'headphones':
+      return (
+        <group position={[0, 1.32, 0]}>
+          <mesh>
+            <torusGeometry args={[0.21, 0.025, 8, 18, Math.PI]} />
+            <meshStandardMaterial color={tint} metalness={0.4} />
+          </mesh>
+          <mesh position={[-0.21, -0.02, 0]} castShadow>
+            <sphereGeometry args={[0.06, 12, 12]} />
+            <meshStandardMaterial color={tint} />
+          </mesh>
+          <mesh position={[0.21, -0.02, 0]} castShadow>
+            <sphereGeometry args={[0.06, 12, 12]} />
+            <meshStandardMaterial color={tint} />
+          </mesh>
+        </group>
+      )
+    case 'none':
+    default:
+      return null
+  }
+}
+
+export type EmoteState = 'idle' | 'walk' | 'wave' | 'dance' | 'sit' | 'clap'
 
 type Props = {
   config: AvatarConfig
   position?: [number, number, number]
   showName?: boolean
   isWalking?: boolean
+  emote?: EmoteState
+  /** When > 0, the emote auto-clears after this many ms (set to 0 for sustained sit). */
+  emoteAutoClearMs?: number
 }
 
 /**
  * 100% reliable Three.js primitive avatar — no fetches, no GLBs.
- * Must render inside a <Canvas> (the <Html> name label requires it).
+ * Drives idle/walk/wave/dance/sit/clap from per-frame trig — all emotes are
+ * additive offsets on a stable base pose.
  */
 export function PrimitiveAvatar({
   config,
   position = [0, 0, 0],
   showName = true,
   isWalking = false,
+  emote = 'idle',
 }: Props) {
   const group = useRef<THREE.Group>(null!)
-  const body = useRef<THREE.Mesh>(null!)
+  const torso = useRef<THREE.Mesh>(null!)
+  const armL = useRef<THREE.Mesh>(null!)
+  const armR = useRef<THREE.Mesh>(null!)
+  const legL = useRef<THREE.Mesh>(null!)
+  const legR = useRef<THREE.Mesh>(null!)
+  const head = useRef<THREE.Mesh>(null!)
+  const hair = useRef<THREE.Mesh>(null!)
+
+  const activeEmote: EmoteState = isWalking ? 'walk' : emote
 
   useFrame((state) => {
-    if (!group.current) return
     const t = state.clock.elapsedTime
-    if (isWalking) {
-      group.current.position.y = position[1] + Math.abs(Math.sin(t * 8)) * 0.08
-      if (body.current) body.current.rotation.z = Math.sin(t * 8) * 0.05
-    } else {
-      group.current.position.y = position[1] + Math.sin(t * 2) * 0.02
-      if (body.current) body.current.rotation.z = 0
+    if (!group.current) return
+
+    // Reset transforms each frame so emote logic is stateless.
+    group.current.position.y = position[1]
+    if (torso.current) torso.current.rotation.set(0, 0, 0)
+    if (armL.current) armL.current.rotation.set(0, 0, 0)
+    if (armR.current) armR.current.rotation.set(0, 0, 0)
+    if (legL.current) legL.current.position.set(-0.1, 0.25, 0)
+    if (legR.current) legR.current.position.set(0.1, 0.25, 0)
+    if (head.current) head.current.rotation.set(0, 0, 0)
+    if (hair.current) hair.current.rotation.set(0, 0, 0)
+
+    switch (activeEmote) {
+      case 'walk': {
+        group.current.position.y = position[1] + Math.abs(Math.sin(t * 8)) * 0.08
+        if (torso.current) torso.current.rotation.z = Math.sin(t * 8) * 0.05
+        if (armL.current) armL.current.rotation.x = Math.sin(t * 8) * 0.6
+        if (armR.current) armR.current.rotation.x = -Math.sin(t * 8) * 0.6
+        break
+      }
+      case 'wave': {
+        if (armR.current) {
+          armR.current.rotation.z = -1.4 + Math.sin(t * 8) * 0.2
+          armR.current.rotation.x = -0.3
+        }
+        if (head.current) head.current.rotation.y = Math.sin(t * 4) * 0.15
+        break
+      }
+      case 'dance': {
+        const bob = Math.abs(Math.sin(t * 6)) * 0.18
+        group.current.position.y = position[1] + bob
+        if (torso.current) {
+          torso.current.rotation.z = Math.sin(t * 6) * 0.18
+          torso.current.rotation.y = Math.sin(t * 3) * 0.4
+        }
+        if (armL.current) armL.current.rotation.x = -1.2 + Math.sin(t * 6) * 0.5
+        if (armR.current) armR.current.rotation.x = -1.2 - Math.sin(t * 6) * 0.5
+        if (head.current) head.current.rotation.z = Math.sin(t * 6) * 0.1
+        break
+      }
+      case 'clap': {
+        const c = Math.sin(t * 10) * 0.5 + 0.5
+        if (armL.current) armL.current.rotation.z = -0.8 + c * 0.6
+        if (armR.current) armR.current.rotation.z = 0.8 - c * 0.6
+        if (armL.current) armL.current.rotation.x = -0.6
+        if (armR.current) armR.current.rotation.x = -0.6
+        break
+      }
+      case 'sit': {
+        // Lower the entire avatar and bend legs forward.
+        group.current.position.y = position[1] - 0.18
+        if (legL.current) legL.current.position.set(-0.1, 0.18, 0.1)
+        if (legR.current) legR.current.position.set(0.1, 0.18, 0.1)
+        if (torso.current) torso.current.rotation.x = -0.05
+        break
+      }
+      case 'idle':
+      default: {
+        group.current.position.y = position[1] + Math.sin(t * 2) * 0.02
+        if (torso.current) torso.current.rotation.z = Math.sin(t * 2) * 0.02
+        break
+      }
     }
   })
 
@@ -46,11 +199,11 @@ export function PrimitiveAvatar({
       </mesh>
 
       {/* legs */}
-      <mesh position={[-0.1, 0.25, 0]} castShadow>
+      <mesh ref={legL} position={[-0.1, 0.25, 0]} castShadow>
         <boxGeometry args={[0.12, 0.5, 0.15]} />
         <meshStandardMaterial color={config.bottomTint} />
       </mesh>
-      <mesh position={[0.1, 0.25, 0]} castShadow>
+      <mesh ref={legR} position={[0.1, 0.25, 0]} castShadow>
         <boxGeometry args={[0.12, 0.5, 0.15]} />
         <meshStandardMaterial color={config.bottomTint} />
       </mesh>
@@ -66,31 +219,50 @@ export function PrimitiveAvatar({
       </mesh>
 
       {/* torso */}
-      <mesh ref={body} position={[0, 0.75, 0]} castShadow>
+      <mesh ref={torso} position={[0, 0.75, 0]} castShadow>
         <boxGeometry args={[0.4, 0.5, 0.25]} />
         <meshStandardMaterial color={config.topTint} />
       </mesh>
 
-      {/* arms */}
-      <mesh position={[-0.27, 0.75, 0]} castShadow>
-        <boxGeometry args={[0.12, 0.45, 0.18]} />
-        <meshStandardMaterial color={config.topTint} />
-      </mesh>
-      <mesh position={[0.27, 0.75, 0]} castShadow>
-        <boxGeometry args={[0.12, 0.45, 0.18]} />
-        <meshStandardMaterial color={config.topTint} />
-      </mesh>
+      {/* arms — pivoted at shoulder so rotation feels right */}
+      <group position={[-0.27, 0.96, 0]}>
+        <mesh ref={armL} position={[0, -0.22, 0]} castShadow>
+          <boxGeometry args={[0.12, 0.45, 0.18]} />
+          <meshStandardMaterial color={config.topTint} />
+        </mesh>
+      </group>
+      <group position={[0.27, 0.96, 0]}>
+        <mesh ref={armR} position={[0, -0.22, 0]} castShadow>
+          <boxGeometry args={[0.12, 0.45, 0.18]} />
+          <meshStandardMaterial color={config.topTint} />
+        </mesh>
+      </group>
 
       {/* head */}
-      <mesh position={[0, 1.18, 0]} castShadow>
+      <mesh ref={head} position={[0, 1.18, 0]} castShadow>
         <sphereGeometry args={[0.18, 16, 16]} />
         <meshStandardMaterial color={config.bodyTint} />
       </mesh>
 
       {/* hair cap */}
-      <mesh position={[0, 1.28, -0.02]} castShadow>
+      <mesh ref={hair} position={[0, 1.28, -0.02]} castShadow>
         <sphereGeometry args={[0.19, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color={config.hairTint} />
+      </mesh>
+
+      <Accessory
+        kind={config.accessory ?? 'none'}
+        tint={config.accessoryTint ?? '#1A1A1A'}
+      />
+
+      {/* face dots */}
+      <mesh position={[-0.06, 1.2, 0.16]}>
+        <sphereGeometry args={[0.018, 8, 8]} />
+        <meshBasicMaterial color="#1A1A1A" />
+      </mesh>
+      <mesh position={[0.06, 1.2, 0.16]}>
+        <sphereGeometry args={[0.018, 8, 8]} />
+        <meshBasicMaterial color="#1A1A1A" />
       </mesh>
 
       {showName && (
