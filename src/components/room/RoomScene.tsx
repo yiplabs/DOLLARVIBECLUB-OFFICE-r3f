@@ -15,8 +15,11 @@ import { ProjectBoard } from './ProjectBoard'
 import { StageSpotlight } from './StageSpotlight'
 import { Avatar } from '@/components/avatar/Avatar'
 import { Pet } from '@/components/avatar/Pet'
-import { GreeterNpc } from '@/components/avatar/GreeterNpc'
+import { NpcAvatar } from '@/components/avatar/NpcAvatar'
 import { RemoteAvatar } from '@/components/avatar/RemoteAvatar'
+import { FootstepDust } from '@/components/avatar/FootstepDust'
+import { NPCS } from '@/lib/rooms/npcs'
+import { useSitDetection } from '@/hooks/useSitDetection'
 import { useSettingsStore } from '@/store/settingsStore'
 import { AvatarShadow } from '@/components/avatar/AvatarShadow'
 import { ChatBubble } from '@/components/chat/ChatBubble'
@@ -40,6 +43,7 @@ export default function RoomScene({ slug, onSelectSelf, onSelectPeer }: Props) {
   const themeKey = meta?.theme ?? 'lounge'
   const mask = useMemo(() => buildWalkableMask(theme), [theme])
   const onFloorClick = useClickToMove(mask)
+  useSitDetection(theme, true)
 
   const peers = useRoomStore((s) => s.peers)
   const bubbles = useRoomStore((s) => s.bubbles)
@@ -92,16 +96,18 @@ export default function RoomScene({ slug, onSelectSelf, onSelectPeer }: Props) {
 
       {/* Per-theme decorations */}
       {themeKey === 'lounge' && (
-        <>
-          <ProjectBoard
-            position={[7, 0]}
-            wall="north"
-            gridWidth={theme.gridWidth}
-            gridDepth={theme.gridDepth}
-          />
-          <GreeterNpc position={[7, 11]} />
-        </>
+        <ProjectBoard
+          position={[7, 0]}
+          wall="north"
+          gridWidth={theme.gridWidth}
+          gridDepth={theme.gridDepth}
+        />
       )}
+
+      {/* NPCs for the current theme */}
+      {NPCS[themeKey].map((npc, i) => (
+        <NpcAvatar key={`${themeKey}-npc-${i}`} {...npc} />
+      ))}
       {themeKey === 'brainstorm' && (
         <Whiteboard
           position={[7, 0]}
@@ -128,6 +134,7 @@ export default function RoomScene({ slug, onSelectSelf, onSelectPeer }: Props) {
       )}
 
       <Avatar onSelect={onSelectSelf} />
+      <FootstepDust />
       {petEnabled && <Pet />}
       {Object.values(peers).map((peer) => (
         <RemoteAvatar

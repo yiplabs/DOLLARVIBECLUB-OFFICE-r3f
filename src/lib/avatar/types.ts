@@ -1,10 +1,13 @@
 export type AccessoryKind = 'none' | 'glasses' | 'beanie' | 'crown' | 'headphones'
 
+export type HairStyle = 'short' | 'buzz' | 'mohawk' | 'long' | 'bun'
+
 export type AvatarConfig = {
   /** Picks the Kenney Mini Characters GLB, e.g. "character-male-a.glb". */
   characterModel: string
   bodyTint: string
   hairTint: string
+  hairStyle?: HairStyle
   topTint: string
   bottomTint: string
   shoeTint: string
@@ -12,6 +15,14 @@ export type AvatarConfig = {
   accessory?: AccessoryKind
   accessoryTint?: string
 }
+
+export const HAIR_STYLES: { kind: HairStyle; label: string; emoji: string }[] = [
+  { kind: 'short', label: 'short', emoji: '🟤' },
+  { kind: 'buzz', label: 'buzz', emoji: '⚪' },
+  { kind: 'mohawk', label: 'mohawk', emoji: '🦅' },
+  { kind: 'long', label: 'long', emoji: '🟫' },
+  { kind: 'bun', label: 'bun', emoji: '🍡' },
+]
 
 export const ACCESSORIES: { kind: AccessoryKind; label: string; emoji: string }[] = [
   { kind: 'none', label: 'none', emoji: '·' },

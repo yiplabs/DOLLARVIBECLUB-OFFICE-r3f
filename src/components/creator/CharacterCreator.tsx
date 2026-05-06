@@ -14,10 +14,12 @@ import {
   BODY_TINTS,
   BOTTOM_TINTS,
   CHARACTER_MODELS,
+  HAIR_STYLES,
   HAIR_TINTS,
   SHOE_TINTS,
   TOP_TINTS,
   type AccessoryKind,
+  type HairStyle,
 } from '@/lib/avatar/types'
 import { PresetPicker } from './PresetPicker'
 import { OptionRow } from './OptionRow'
@@ -148,13 +150,40 @@ export function CharacterCreator() {
           )}
 
           {tab === 'hair' && (
-            <OptionRow label="hair color">
-              <ColorSwatchGrid
-                colors={HAIR_TINTS}
-                value={config.hairTint}
-                onChange={(c) => setConfig({ hairTint: c })}
-              />
-            </OptionRow>
+            <>
+              <OptionRow label="hair style">
+                <div className="grid grid-cols-5 gap-1.5">
+                  {HAIR_STYLES.map((h) => {
+                    const active = (config.hairStyle ?? 'short') === h.kind
+                    return (
+                      <button
+                        key={h.kind}
+                        onClick={() =>
+                          setConfig({ hairStyle: h.kind as HairStyle })
+                        }
+                        className={`brut-btn flex flex-col items-center gap-0.5 py-2 rounded-md ${
+                          active
+                            ? 'bg-dvc-yellow text-dvc-border'
+                            : 'bg-dvc-section text-dvc-cream'
+                        }`}
+                      >
+                        <span className="text-base leading-none">{h.emoji}</span>
+                        <span className="font-ui font-bold text-[9px]">
+                          {h.label}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </OptionRow>
+              <OptionRow label="hair color">
+                <ColorSwatchGrid
+                  colors={HAIR_TINTS}
+                  value={config.hairTint}
+                  onChange={(c) => setConfig({ hairTint: c })}
+                />
+              </OptionRow>
+            </>
           )}
 
           {tab === 'outfit' && (

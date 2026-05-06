@@ -3,7 +3,75 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Html } from '@react-three/drei'
 import * as THREE from 'three'
-import type { AccessoryKind, AvatarConfig } from '@/lib/avatar/types'
+import type { AccessoryKind, AvatarConfig, HairStyle } from '@/lib/avatar/types'
+
+function Hair({
+  style = 'short',
+  tint,
+}: {
+  style?: HairStyle
+  tint: string
+}) {
+  switch (style) {
+    case 'buzz':
+      // a thin sphere cap, hugging the head
+      return (
+        <mesh position={[0, 1.32, -0.02]} castShadow>
+          <sphereGeometry args={[0.18, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.6]} />
+          <meshStandardMaterial color={tint} roughness={0.95} />
+        </mesh>
+      )
+    case 'mohawk':
+      return (
+        <group>
+          <mesh position={[0, 1.28, -0.02]} castShadow>
+            <sphereGeometry args={[0.19, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4]} />
+            <meshStandardMaterial color={tint} roughness={0.85} />
+          </mesh>
+          {/* central spike */}
+          <mesh position={[0, 1.46, -0.02]} castShadow>
+            <boxGeometry args={[0.08, 0.18, 0.32]} />
+            <meshStandardMaterial color={tint} roughness={0.7} />
+          </mesh>
+        </group>
+      )
+    case 'long':
+      return (
+        <group>
+          <mesh position={[0, 1.28, -0.02]} castShadow>
+            <sphereGeometry args={[0.19, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <meshStandardMaterial color={tint} roughness={0.85} />
+          </mesh>
+          {/* hair fall behind shoulders */}
+          <mesh position={[0, 0.95, -0.13]} castShadow>
+            <boxGeometry args={[0.36, 0.55, 0.08]} />
+            <meshStandardMaterial color={tint} roughness={0.85} />
+          </mesh>
+        </group>
+      )
+    case 'bun':
+      return (
+        <group>
+          <mesh position={[0, 1.28, -0.02]} castShadow>
+            <sphereGeometry args={[0.19, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <meshStandardMaterial color={tint} roughness={0.85} />
+          </mesh>
+          <mesh position={[0, 1.42, -0.06]} castShadow>
+            <sphereGeometry args={[0.07, 12, 12]} />
+            <meshStandardMaterial color={tint} roughness={0.85} />
+          </mesh>
+        </group>
+      )
+    case 'short':
+    default:
+      return (
+        <mesh position={[0, 1.28, -0.02]} castShadow>
+          <sphereGeometry args={[0.19, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+          <meshStandardMaterial color={tint} />
+        </mesh>
+      )
+  }
+}
 
 function Accessory({
   kind,
@@ -119,7 +187,7 @@ export function PrimitiveAvatar({
   const legL = useRef<THREE.Mesh>(null!)
   const legR = useRef<THREE.Mesh>(null!)
   const head = useRef<THREE.Mesh>(null!)
-  const hair = useRef<THREE.Mesh>(null!)
+  const hair = useRef<THREE.Group>(null!)
 
   const activeEmote: EmoteState = isWalking ? 'walk' : emote
 
@@ -244,11 +312,10 @@ export function PrimitiveAvatar({
         <meshStandardMaterial color={config.bodyTint} />
       </mesh>
 
-      {/* hair cap */}
-      <mesh ref={hair} position={[0, 1.28, -0.02]} castShadow>
-        <sphereGeometry args={[0.19, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial color={config.hairTint} />
-      </mesh>
+      {/* hair (style-aware) */}
+      <group ref={hair}>
+        <Hair style={config.hairStyle} tint={config.hairTint} />
+      </group>
 
       <Accessory
         kind={config.accessory ?? 'none'}

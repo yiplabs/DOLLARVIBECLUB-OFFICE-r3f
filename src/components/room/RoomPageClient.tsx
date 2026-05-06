@@ -19,6 +19,7 @@ import { PerfHud } from '@/components/chrome/PerfHud'
 import { AchievementsPanel } from '@/components/chrome/AchievementsPanel'
 import { ActivityFeed } from '@/components/chrome/ActivityFeed'
 import { RoomInfoOverlay } from '@/components/chrome/RoomInfoOverlay'
+import { RoomVisitWelcome } from '@/components/chrome/RoomVisitWelcome'
 import { getRoom } from '@/lib/rooms/catalog'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useAchievementWatcher } from '@/hooks/useAchievementWatcher'
@@ -132,6 +133,7 @@ export default function RoomPageClient({ slug }: { slug: string }) {
       />
 
       <RoomInfoOverlay slug={slug} />
+      <RoomVisitWelcome slug={slug} />
       <ChatInput />
       <EmoteBar />
       <MarqueeTicker />
